@@ -93,5 +93,16 @@
     options = ["--cmd cd"];
     enableZshIntegration = true;
   };
-  programs.zsh.enable = true;
+  programs.zsh = {
+	enable = true;
+	initContent = ''
+		# direnv alternative that plays nicely with nix develop
+		# see https://github.com/nix-community/nix-direnv/issues/324
+		# see https://github.com/direnv/direnv/issues/1084
+		function enterNixDevelopShell {
+		  if [[ -f flake.nix && $PWD != */flakes ]]; then nix develop .; fi
+		}
+		chpwd_functions=(''${chpwd_functions[@]} "enterNixDevelopShell")
+	'';
+  };
 }
